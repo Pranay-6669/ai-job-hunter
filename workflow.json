@@ -1,0 +1,445 @@
+{
+  "name": "AI JOB HUNTER",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "AI JOB HUNTER",
+        "formDescription": "Upload your Resume",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Upload Resume",
+              "fieldType": "file",
+              "fieldName": "resume",
+              "multipleFiles": false,
+              "acceptFileTypes": ".pdf",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        0,
+        0
+      ],
+      "id": "a728643d-d4a4-43c9-bcc8-6cc2349c8f9a",
+      "name": "On form submission"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "resume",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "e4aa99ba-00b2-4b1c-9fe9-c925f06ca523",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "text": "=Information Etractor \n#Text\n\n\n\nYou are a strict resume analysis and job-role classification system.\n\nAnalyze ONLY the resume text provided at the bottom of this prompt.\n\nYour task is to extract the candidate's information and identify the most relevant job roles based ONLY on the skills, technologies, projects, education, and experience actually present in the resume.\n\n==================================================\nSTRICT RULES\n==================================================\n\n1. NEVER invent information.\n2. NEVER assume skills or technologies that are not explicitly present in the resume.\n3. NEVER select a job role just because one keyword appears.\n4. Consider the candidate's overall skills, technologies, projects, education, and experience.\n5. Select ONLY job roles that are genuinely supported by the resume.\n6. Return a maximum of 5 job roles.\n7. Return at least 1 job role.\n8. Rank job roles from MOST relevant to LEAST relevant.\n9. Job roles MUST come ONLY from the fixed list below.\n10. The job_roles array MUST contain plain strings only.\n11. Do NOT return job-role objects.\n12. Do NOT return relevance scores.\n13. Do NOT add explanations inside job_roles.\n14. Do NOT return roles simply to fill the maximum of 5 roles.\n\n==================================================\nALLOWED JOB ROLES\n==================================================\n\nYou may ONLY use these job roles:\n\n- AI/ML Engineer\n- Machine Learning Engineer\n- Data Scientist\n- Generative AI Engineer\n- AI Engineer\n- Python Developer\n- Software Developer\n\n==================================================\nHOW TO SELECT JOB ROLES\n==================================================\n\nAI/ML Engineer:\nSelect when the resume has strong evidence of AI or machine learning work, such as machine learning, deep learning, NLP, AI models, ML projects, or AI/ML applications.\n\nMachine Learning Engineer:\nSelect when the resume demonstrates machine learning model development, training, evaluation, ML algorithms, feature engineering, ML frameworks, or substantial ML projects.\n\nData Scientist:\nSelect when the resume demonstrates data analysis, statistics, data visualization, SQL, Pandas, NumPy, machine learning for data analysis, or substantial data science projects.\n\nGenerative AI Engineer:\nSelect ONLY when the resume explicitly contains Generative AI, LLMs, RAG, LangChain, vector databases, embeddings, prompt engineering, AI agents, or LLM-based applications.\n\nAI Engineer:\nSelect when the resume demonstrates building AI-powered applications, AI systems, NLP applications, AI agents, LLM applications, or integrating AI models into applications.\n\nPython Developer:\nSelect when Python is explicitly present AND Python is meaningfully used for programming, development, backend development, automation, scripting, APIs, or substantial Python projects.\n\nSoftware Developer:\nSelect when the resume demonstrates software development through programming languages, web development, frontend/backend development, APIs, databases, or software projects.\n\n==================================================\nIMPORTANT CLASSIFICATION LOGIC\n==================================================\n\nUse the candidate's ACTUAL skills and projects to decide the roles.\n\nFor example:\n\nIf the resume contains:\nPython + Machine Learning + ML projects\n→ Machine Learning Engineer / AI/ML Engineer / Python Developer may be relevant.\n\nIf the resume contains:\nPython + Pandas + NumPy + SQL + data analysis\n→ Data Scientist / Python Developer may be relevant.\n\nIf the resume contains:\nLangChain + ChromaDB + RAG + LLM/AI Agent projects\n→ Generative AI Engineer / AI Engineer may be relevant.\n\nIf the resume contains:\nJava + JavaScript + React + Node + Express + web projects\n→ Software Developer may be relevant.\n\nIf the resume contains:\nPython + LangChain + ChromaDB + AI projects\n→ Generative AI Engineer / AI Engineer / AI/ML Engineer / Python Developer may be relevant.\n\nIMPORTANT:\nDo not blindly use these examples.\nAlways analyze the actual resume.\n\nA technology by itself is NOT enough.\n\nFor example:\n- Python alone does NOT automatically mean Python Developer.\n- Java alone does NOT automatically mean Software Developer.\n- Machine Learning alone does NOT automatically mean Machine Learning Engineer.\n- LangChain alone does NOT automatically mean Generative AI Engineer.\n\nThe role must be supported by the overall resume.\n\n==================================================\nEXTRACTION RULES\n==================================================\n\ncandidate_name:\nExtract the candidate's name exactly as written in the resume.\n\nskills:\nExtract only skills explicitly mentioned in the resume.\n\neducation:\nExtract only educational qualifications explicitly mentioned in the resume.\n\nexperience_years:\nReturn professional work experience in years.\nDo NOT count college, coursework, academic projects, or personal projects.\nIf professional experience is not explicitly present, return 0.\n\ntechnologies:\nExtract only technologies explicitly mentioned in the resume.\n\nprojects:\nExtract only project names explicitly mentioned in the resume.\n\n==================================================\nOUTPUT FORMAT\n==================================================\n\nReturn ONLY valid JSON.\n\nDo NOT use Markdown.\n\nDo NOT use ```json.\n\nDo NOT use ```.\n\nDo NOT write any explanation before or after the JSON.\n\nThe job_roles field MUST contain plain strings.\n\nCORRECT:\n\n\"job_roles\": [\n  \"AI/ML Engineer\",\n  \"Python Developer\"\n]\n\nINCORRECT:\n\n\"job_roles\": [\n  {\n    \"name\": \"AI/ML Engineer\",\n    \"relevance\": 5\n  }\n]\n\nNEVER return objects inside job_roles.\n\nNEVER return relevance scores.\n\n==================================================\nREQUIRED JSON STRUCTURE\n==================================================\n\n{\n  \"candidate_name\": \"Candidate Name\",\n  \"skills\": [],\n  \"education\": [],\n  \"experience_years\": 0,\n  \"job_roles\": [],\n  \"technologies\": [],\n  \"projects\": []\n}\n\nThe example above is ONLY the structure.\nDo NOT copy example information.\n\n==================================================\nRESUME TEXT\n==================================================\n\n{{$json.text}}",
+        "schemaType": "manual",
+        "inputSchema": "\n\n{\n  \"type\": \"object\",\n  \"properties\": {\n    \"candidate_name\": {\n      \"type\": \"string\"\n    },\n    \"skills\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    },\n    \"education\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    },\n    \"experience_years\": {\n      \"type\": \"number\"\n    },\n    \"job_roles\": {\n      \"type\": \"array\",\n      \"minItems\": 1,\n      \"maxItems\": 5,\n      \"items\": {\n        \"type\": \"string\",\n        \"enum\": [\n          \"AI/ML Engineer\",\n          \"Machine Learning Engineer\",\n          \"Data Scientist\",\n          \"Generative AI Engineer\",\n          \"AI Engineer\",\n          \"Python Developer\",\n          \"Software Developer\"\n        ]\n      }\n    },\n    \"technologies\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    },\n    \"projects\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    }\n  },\n  \"required\": [\n    \"candidate_name\",\n    \"skills\",\n    \"education\",\n    \"experience_years\",\n    \"job_roles\",\n    \"technologies\",\n    \"projects\"\n  ],\n  \"additionalProperties\": false\n}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "cf9681d6-ebf3-4ba8-87f7-b85820515d68",
+      "name": "Information Extractor"
+    },
+    {
+      "parameters": {
+        "model": "llama3.2:3b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        368,
+        176
+      ],
+      "id": "23ccbb97-cfe5-4799-b5f5-d483b2aefb06",
+      "name": "Ollama Chat Model1"
+    },
+    {
+      "parameters": {
+        "resource": "table",
+        "operation": "create",
+        "tableName": "Candidate Profile",
+        "columns": {
+          "column": [
+            {
+              "name": "Profile"
+            },
+            {
+              "name": "Candidate_name"
+            },
+            {
+              "name": "job_roles"
+            },
+            {
+              "name": "skills"
+            },
+            {
+              "name": "experience_years",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -144,
+        -176
+      ],
+      "id": "90846a4d-c120-4138-88ad-168641bee21c",
+      "name": "Create a data table"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "",
+          "mode": "list",
+          "cachedResultName": "Select your Candidate Profile table"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Candidate_name": "={{ $json.output.candidate_name }}",
+            "job_roles": "={{ $json.output.job_roles.join(', ') }}",
+            "skills": "={{ $json.output.skills.join(', ') }}",
+            "experience_years": "={{ $json.output.experience_years }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Profile",
+              "displayName": "Profile",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Candidate_name",
+              "displayName": "Candidate_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "job_roles",
+              "displayName": "job_roles",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "skills",
+              "displayName": "skills",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "experience_years",
+              "displayName": "experience_years",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        768,
+        0
+      ],
+      "id": "c6c2b51f-4f39-4e4d-9136-01f73acfb602",
+      "name": "Insert row"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "daysInterval": 3,
+              "triggerAtHour": 22
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        128,
+        -288
+      ],
+      "id": "d6e2c8fe-58ff-43fb-a430-8a0ab692eaf8",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "",
+          "mode": "list",
+          "cachedResultName": "Select your Candidate Profile table"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "Candidate_name",
+              "condition": "isNotEmpty"
+            }
+          ]
+        },
+        "limit": 1
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        336,
+        -288
+      ],
+      "id": "1cf3a598-4ca0-42c8-baab-d7d355a12ed2",
+      "name": "Get row(s)"
+    },
+    {
+      "parameters": {
+        "url": "https://api.apify.com/v2/acts/cryptosignals~linkedin-jobs-scraper/run-sync-get-dataset-items",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": false,
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"action\": \"search\",\n  \"keywords\": \"={{ $json.job_roles }}\",\n  \"location\": \"India\",\n  \"maxItems\": 10\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        544,
+        -288
+      ],
+      "id": "7988b191-6c86-4f32-99ae-31b99b0df4b2",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "\n\nconst jobs = $input.all();\n\nreturn [{\n  json: {\n    jobs: jobs.map((item, index) => ({\n      number: index + 1,\n      title: item.json.title,\n      company: item.json.company,\n      location: item.json.location,\n      postedDate: item.json.postedDate,\n      url: item.json.url\n    }))\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        -288
+      ],
+      "id": "fb5d8f73-c046-4e71-9e69-61830e8c9504",
+      "name": "Format for Email"
+    },
+    {
+      "parameters": {
+        "sendTo": "YOUR_EMAIL@example.com",
+        "subject": "={{ $json.subject }}",
+        "message": "={{ $json.html }} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1424,
+        -176
+      ],
+      "id": "b4199596-0567-42cc-bdee-90ca1c3a4592",
+      "name": "Send a message"
+    },
+    {
+      "parameters": {
+        "jsCode": "\n\nconst now = new Date();\nconst days = 7;\n\nreturn $input.all().filter(item => {\n  const posted = new Date(item.json.postedDate);\n  const diff = (now - posted) / (1000 * 60 * 60 * 24);\n\n  return diff >= 0 && diff <= days;\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        752,
+        -288
+      ],
+      "id": "4601353c-88ea-4282-b7d0-bb2182504274",
+      "name": "Latest Jobs"
+    },
+    {
+      "parameters": {
+        "jsCode": "const jobs = $json.jobs;\n\nlet html = `\n<h2>🤖 AI Job Hunter - Today's Jobs</h2>\n<p>Here are the latest LinkedIn jobs matching your profile:</p>\n`;\n\nfor (const job of jobs) {\n  html += `\n    <div style=\"margin-bottom:20px;\">\n      <h3>${job.number}. ${job.title}</h3>\n      <p>\n        <b>Company:</b> ${job.company}<br>\n        <b>Location:</b> ${job.location}<br>\n        <b>Posted:</b> ${job.postedDate}\n      </p>\n      <a href=\"${job.url}\">🔗 Apply on LinkedIn</a>\n    </div>\n    <hr>\n  `;\n}\n\nreturn [{\n  json: {\n    subject: `🤖 AI Job Hunter - ${jobs.length} New Jobs`,\n    html\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1168,
+        -288
+      ],
+      "id": "9fc2b64b-9027-4787-8091-b025886bd11f",
+      "name": "Create mail"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "Insert row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s)": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Latest Jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format for Email": {
+      "main": [
+        [
+          {
+            "node": "Create mail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Latest Jobs": {
+      "main": [
+        [
+          {
+            "node": "Format for Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create mail": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "Asia/Kolkata",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}

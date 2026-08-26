@@ -1,0 +1,9 @@
+.env
+.env.*
+!.env.example
+.n8n/
+*.sqlite*
+n8nEventLog*.log
+node_modules/
+dist/
+credentials*.json
